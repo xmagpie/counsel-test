@@ -32,22 +32,22 @@
 (require 's)
 (require 'ivy)
 
-(defgroup counsel-ctest-group nil
+(defgroup counsel-ctest nil
   "Group for cousel-ctest related settings")
 
 (defcustom counsel-ctest-candidates-cmd "ctest -N"
   "Command used to list the tests."
-  :group 'counsel-ctest-group
+  :group 'counsel-ctest
   :type 'string)
 
 (defcustom counsel-ctest-dir nil
   "Directory to run ctest in."
-  :group 'counsel-ctest-group
+  :group 'counsel-ctest
   :type 'string)
 
 (defcustom counsel-ctest-env "CLICOLOR_FORCE=1 CTEST_OUTPUT_ON_FAILURE=1"
   "Envirionment variables for tests."
-  :group 'counsel-ctest-group
+  :group 'counsel-ctest
   :type 'string)
 
 (defun counsel-ctest--get-build-dir ()
