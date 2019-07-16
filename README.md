@@ -5,6 +5,8 @@ This package is inspired by
 [helm-ctest](https://github.com/danlamanna/helm-ctest), huge thanks to the
 author.
 
+![demo](assets/demo.gif)
+
 # Installation
 This package is not yet in MELPA, so currently the only possible way is to
 install it manually.
