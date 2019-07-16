@@ -1,4 +1,4 @@
-;;; counsel-ctest.el --- Browse and execute ctest from within emacs with ivy
+;;; counsel-ctest.el --- Browse and execute ctest from within emacs with ivy -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2018 Konstantin Sorokin (GNU/GPL Licence)
 
