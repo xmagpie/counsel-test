@@ -35,33 +35,37 @@
 (defgroup counsel-ctest nil
   "Group for cousel-ctest related settings")
 
-(defcustom counsel-ctest-candidates-cmd "ctest -N"
-  "Command used to list the tests."
-  :group 'counsel-ctest
-  :type 'string)
+(defvar counsel-ctest-candidates-cmd "ctest -N"
+  "Command used to list the tests.")
 
-(defcustom counsel-ctest-dir nil
-  "Directory to run ctest in."
-  :group 'counsel-ctest
-  :type 'string)
+(defvar counsel-ctest-dir nil
+  "Directory to run ctest in.
 
-(defcustom counsel-ctest-env "CLICOLOR_FORCE=1 CTEST_OUTPUT_ON_FAILURE=1"
-  "Envirionment variables for tests."
-  :group 'counsel-ctest
-  :type 'string)
+It is recommended to set this variable via dir-locals.el.")
 
-(defun counsel-ctest--get-build-dir ()
-  "Determine the directory to run the tests in."
-  (unless counsel-ctest-dir
+(defvar counsel-ctest-env "CLICOLOR_FORCE=1 CTEST_OUTPUT_ON_FAILURE=1"
+  "Envirionment variables for tests.
+
+It is recommended to set this variable via dir-locals.el.")
+
+(defun counsel-ctest--get-build-dir (&optional force-read-dir)
+  "Determine the directory to run the tests in.
+
+When FORCE-READ-DIR is not nil prompt for ctest directory even if it was
+already set."
+  (when (or force-read-dir (not counsel-ctest-dir))
     (setq counsel-ctest-dir
 	  (read-directory-name "CTest Build Dir: ")))
   (s-append "/" (s-chop-suffix "/" counsel-ctest-dir)))
 
-(defun counsel-ctest--get-candidates ()
-  "Run ctest to get the available test candidates."
+(defun counsel-ctest--get-candidates (&optional force-read-dir)
+  "Run ctest to get the available test candidates.
+
+When FORCE-READ-DIR is not nil prompt for ctest directory even if it was
+already set."
   (let* ((ctest-cmd counsel-ctest-candidates-cmd)
 	 (test-re "^Test[[:space:]]*#")
-	 (default-directory (counsel-ctest--get-build-dir)))
+	 (default-directory (counsel-ctest--get-build-dir force-read-dir)))
     (seq-filter (lambda(s)
                   (s-match test-re s))
                 (seq-map 's-trim
@@ -102,10 +106,15 @@ SELECTIONS is a list of candidate tests to execute."
      (compile compile-command)))
 
 ;;;###autoload
-(defun counsel-ctest ()
-  "Browse and execute ctest tests."
-  (interactive)
-  (ivy-read "Select tests: " (counsel-ctest--get-candidates)
+(defun counsel-ctest (arg)
+  "Browse and execute ctest tests.
+
+If the value of `counsel-ctest-dir' is not set (e.g. nil) prompt user for the
+ctest directory.
+
+With a prefix argument ARG also force prompt user for this directory."
+  (interactive "P")
+  (ivy-read "Select tests: " (counsel-ctest--get-candidates arg)
 	    :require-match t
 	    :sort t
 	    :action (lambda (x) (counsel-ctest--action (list x)))
