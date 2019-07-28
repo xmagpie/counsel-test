@@ -41,9 +41,9 @@ This package contains several variables that allow certain customization on the
 per-project basis. They have sensible defaults but it is strongly recommended to
 set some of them in `dir-locals.el` for each project separately.
 
-* `counsel-ctest-candidates-cmd` - command that is used to extract the list of
-  ctest tests. For now, you should practically never alter the default value of
-  this variable.
+* `counsel-ctest-cmd` - command that is used to run ctest, defaults to "ctest".
+  If you wish to use the custom ctest binary, point this variable to it, e.g.
+  `(setq counsel-ctest-cmd "path/to/custom/ctest-bin)`.
 * `counsel-ctest-dir` - directory from where to run the
   `counsel-ctest-candidates-cmd` and perform ctest tests execution. Default
   value is `nil`. When `nil` the user is asked for the directory

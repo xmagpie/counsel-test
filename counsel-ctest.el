@@ -32,8 +32,8 @@
 (require 's)
 (require 'ivy)
 
-(defvar counsel-ctest-candidates-cmd "ctest -N"
-  "Command used to list the tests.")
+(defvar counsel-ctest-cmd "ctest"
+  "Command used to invoke ctest.")
 
 (defvar counsel-ctest-dir nil
   "Directory to run ctest in.
@@ -60,13 +60,14 @@ already set."
 
 When FORCE-READ-DIR is not nil prompt for ctest directory even if it was
 already set."
-  (let* ((ctest-cmd counsel-ctest-candidates-cmd)
+  (let* ((candidates-cmd (concat counsel-ctest-cmd " -N"))
 	 (test-re "^Test[[:space:]]*#")
 	 (default-directory (counsel-ctest--get-build-dir force-read-dir)))
     (seq-filter (lambda(s)
                   (s-match test-re s))
                 (seq-map 's-trim
-                         (s-lines (shell-command-to-string ctest-cmd))))))
+                         (s-lines (shell-command-to-string
+                                   candidates-cmd))))))
 
 (defun counsel-ctest--num-from-str (s)
   "Extract number from the string representing test.
@@ -86,9 +87,9 @@ STRS is a list of test strings from the output of ctest -N"
   "Create ctest command to run selected candidates.
 
 TEST-NUMS is a list of numbers representing the tests to run"
-  (concat "env "
+  (format "env %s %s -I %s"
 	  counsel-ctest-env
-	  " ctest -I "
+          counsel-ctest-cmd
 	  (s-join "," (seq-map (lambda(n)
                                  (format "%d,%d" n n))
                                test-nums))))
@@ -111,6 +112,10 @@ ctest directory.
 
 With a prefix argument ARG also force prompt user for this directory."
   (interactive "P")
+
+  (unless (executable-find counsel-ctest-cmd)
+    (error "Command '%s' not found in path" counsel-ctest-cmd))
+
   (ivy-read "Select tests: " (counsel-ctest--get-candidates arg)
 	    :require-match t
 	    :sort t
