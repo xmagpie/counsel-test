@@ -72,7 +72,7 @@ already set."
                          (s-lines (shell-command-to-string ctest-cmd))))))
 
 (defun counsel-ctest--num-from-str (s)
-  "Extracts number from the string representing test.
+  "Extract number from the string representing test.
 
 S is a single string representing test from the output of ctest
 -N, e.g Test #2: MyTest"
@@ -80,7 +80,7 @@ S is a single string representing test from the output of ctest
 	   (cadr (s-match "#\\([[:digit:]]+\\)" s))))
 
 (defun counsel-ctest--nums-from-strs (strs)
-  "Extracts numbers from strings representing tests.
+  "Extract numbers from strings representing tests.
 
 STRS is a list of test strings from the output of ctest -N"
   (seq-map 'counsel-ctest--num-from-str strs))
