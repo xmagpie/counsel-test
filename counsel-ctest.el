@@ -1,4 +1,4 @@
-;;; counsel-ctest.el --- Browse and execute ctest from within emacs with ivy -*- lexical-binding: t -*-
+;;; counsel-ctest.el --- Browse and execute ctest with ivy -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2018 Konstantin Sorokin (GNU/GPL Licence)
 
@@ -6,7 +6,7 @@
 ;; URL: http://github.com/xmagpie/counsel-ctest
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "24") (ivy "0.11.0") (s "1.12.0"))
-;; Keywords: ivy, counsel, ctest
+;; Keywords: tools, ivy, counsel, ctest
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -31,9 +31,6 @@
 ;;; Code:
 (require 's)
 (require 'ivy)
-
-(defgroup counsel-ctest nil
-  "Group for cousel-ctest related settings")
 
 (defvar counsel-ctest-candidates-cmd "ctest -N"
   "Command used to list the tests.")
