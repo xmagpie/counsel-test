@@ -50,10 +50,10 @@ It is recommended to set this variable via dir-locals.el.")
 
 When FORCE-READ-DIR is not nil prompt for ctest directory even if it was
 already set."
-  (when (or force-read-dir (not counsel-ctest-dir))
-    (setq counsel-ctest-dir
-	  (read-directory-name "CTest Build Dir: ")))
-  (s-append "/" (s-chop-suffix "/" counsel-ctest-dir)))
+  (let ((build-dir (if (or force-read-dir (not counsel-ctest-dir))
+                       (read-directory-name "CTest Build Dir: ")
+                     counsel-ctest-dir)))
+    (s-append "/" (s-chop-suffix "/" build-dir))))
 
 (defun counsel-ctest--get-candidates (&optional force-read-dir)
   "Run ctest to get the available test candidates.
