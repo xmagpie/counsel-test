@@ -1,7 +1,0 @@
-* Things to be done
-** TODO Add examples
-** DONE Add gif with usage screencast
-   CLOSED: [2019-07-17 Wed 00:17]
-** TODO Upload to melpa
-** DONE Verify that counsel-ctest-dir is normally handled in different projects
-   CLOSED: [2019-07-27 Sat 21:51]
