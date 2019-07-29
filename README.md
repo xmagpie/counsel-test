@@ -56,3 +56,7 @@ set some of them in `dir-locals.el` for each project separately.
   to enable colors and test output only in case of failures. More variables can
   be found in
   [ctest docs](https://cmake.org/cmake/help/latest/manual/ctest.1.html).
+
+## Contributing
+Please, fill free to ask any questions and submit bugs, issues or pull
+requests. All contributions are welcome!
