@@ -1,6 +1,6 @@
 ;;; counsel-ctest.el --- Browse and execute ctest with ivy -*- lexical-binding: t -*-
 
-;; Copyright (c) 2018 Konstantin Sorokin (GNU/GPL Licence)
+;; Copyright (c) 2019 Konstantin Sorokin (GNU/GPL Licence)
 
 ;; Authors: Konstantin Sorokin <sorokin.kc@gmail.com>
 ;; URL: http://github.com/xmagpie/counsel-ctest
