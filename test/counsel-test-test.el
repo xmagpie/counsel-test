@@ -74,4 +74,50 @@ Total Tests: 3")
                      "ctest -v -I 1,1"))
       (should (equal (counsel-test-ctest--create-cmd multiple-selections)
                      "ctest -v -I 1,1,23,23,145,145")))))
+
+(ert-deftest counsel-test-pytest:check-cut-params ()
+  ;; No param cases
+  (should (equal (counsel-test-pytest--cut-params "path/test.py::fun")
+                 "path/test.py::fun"))
+  (should (equal (counsel-test-pytest--cut-params "path/test::Class::fun")
+                 "path/test::Class::fun"))
+  ;; Param cases
+  (should (equal (counsel-test-pytest--cut-params "path/test.py::fun[val]")
+                 "path/test.py::fun"))
+  (should (equal (counsel-test-pytest--cut-params
+                  "path/test.py::Class::fun[001]")
+                 "path/test.py::Class::fun"))
+  (should (equal (counsel-test-pytest--cut-params "path/test.py::fun[[[a]]]")
+                 "path/test.py::fun"))
+  (should (equal (counsel-test-pytest--cut-params "path/test.py::fun[]")
+                 "path/test.py::fun")))
+
+(ert-deftest counsel-test-pytest:check-discover ()
+  :expected-result :failed
+  (with-mock
+    (let ((counsel-test-dir "/test/path")
+          (expected-result '("tests/unit/test_module1.py::test_one"
+                             "tests/unit/test_module2.py::Class::test"
+                             "tests/integration/test_module3.py::test")))
+      (stub shell-command-to-string =>
+            "tests/unit/test_module1.py::test_one
+tests/unit/test_module2.py::test_one
+tests/unit/test_module2.py::Class::test
+tests/integration/test_module3.py::test[param1]
+tests/integration/test_module3.py::test[param2]
+
+-- Docs: https://docs.pytest.org/en/latest/warnings.html
+5 warnings in 0.50 seconds")
+
+      (should (equal (counsel-test-pytest--discover) expected-result)))))
+
+(ert-deftest counsel-test-pytest:create-cmd ()
+  (let ((single-selection '("tests/unit/test_module1.py::test_one"))
+        (multiple-selections '("tests/unit/test_module1.py::test_one"
+                               "tests/unit/test_module2.py::test_one"))
+        (counsel-test-pytest-cmd "pytest"))
+      (should (equal (counsel-test-pytest--create-cmd single-selection)
+                     "pytest tests/unit/test_module1.py::test_one"))
+      (should (equal (counsel-test-pytest--create-cmd multiple-selections)
+                     "pytest tests/unit/test_module1.py::test_one tests/unit/test_module2.py::test_one"))))
 ;;; counsel-test-test.el ends here
