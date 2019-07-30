@@ -1,4 +1,4 @@
-# counsel-ctest
+# counsel-ctest [![Build Status](https://travis-ci.com/xmagpie/counsel-ctest.svg?branch=master)](https://travis-ci.com/xmagpie/counsel-ctest)
 An emacs package that integrates ivy/counsel with ctest.
 
 This package is inspired by
