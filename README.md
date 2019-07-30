@@ -44,7 +44,7 @@ set some of them in `dir-locals.el` for each project separately.
 * `counsel-ctest-cmd` - command that is used to run ctest, defaults to "ctest".
   If you wish to use the custom ctest binary, point this variable to it, e.g.
   `(setq counsel-ctest-cmd "path/to/custom/ctest-bin)`.
-* `counsel-ctest-dir` - directory from where to run the
+* `counsel-test-dir` - directory from where to run the
   `counsel-ctest-candidates-cmd` and perform ctest tests execution. Default
   value is `nil`. When `nil` the user is asked for the directory
   interactively. This is the primary candidate for being a dir-local

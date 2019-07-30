@@ -37,7 +37,7 @@
 (defvar counsel-ctest-cmd "ctest"
   "Command used to invoke ctest.")
 
-(defvar counsel-ctest-dir nil
+(defvar counsel-test-dir nil
   "Directory to run ctest in.
 
 It is recommended to set this variable via dir-locals.el.")
@@ -47,15 +47,15 @@ It is recommended to set this variable via dir-locals.el.")
 
 It is recommended to set this variable via dir-locals.el.")
 
-(defun counsel-ctest--get-build-dir (&optional force-read-dir)
+(defun counsel-test--get-dir (&optional force-read-dir)
   "Determine the directory to run the tests in.
 
 When FORCE-READ-DIR is not nil prompt for ctest directory even if it was
 already set."
-  (let ((build-dir (if (or force-read-dir (not counsel-ctest-dir))
-                       (read-directory-name "CTest Build Dir: ")
-                     counsel-ctest-dir)))
-    (s-append "/" (s-chop-suffix "/" build-dir))))
+  (let ((test-dir (if (or force-read-dir (not counsel-test-dir))
+                      (read-directory-name "CTest Build Dir: ")
+                    counsel-test-dir)))
+    (s-append "/" (s-chop-suffix "/" test-dir))))
 
 (defun counsel-ctest--get-candidates (&optional force-read-dir)
   "Run ctest to get the available test candidates.
@@ -63,8 +63,8 @@ already set."
 When FORCE-READ-DIR is not nil prompt for ctest directory even if it was
 already set."
   (let* ((candidates-cmd (concat counsel-ctest-cmd " -N"))
-	 (test-re "^Test[[:space:]]*#")
-	 (default-directory (counsel-ctest--get-build-dir force-read-dir)))
+         (test-re "^Test[[:space:]]*#")
+         (default-directory (counsel-test--get-dir force-read-dir)))
     (seq-filter (lambda(s)
                   (s-match test-re s))
                 (seq-map 's-trim
@@ -99,19 +99,19 @@ TEST-NUMS is a list of numbers representing the tests to run"
                                test-nums))))
 
 (defun counsel-ctest--action (selections)
-   "The action to run on the selected candidates.
+  "The action to run on the selected candidates.
 
 SELECTIONS is a list of candidate tests to execute."
-   (let* ((test-nums (counsel-ctest--nums-from-strs selections))
-          (default-directory (counsel-ctest--get-build-dir))
-	  (compile-command (counsel-ctest--create-cmd test-nums)))
-     (compile compile-command)))
+  (let* ((test-nums (counsel-ctest--nums-from-strs selections))
+         (default-directory (counsel-test--get-dir))
+         (compile-command (counsel-ctest--create-cmd test-nums)))
+    (compile compile-command)))
 
 ;;;###autoload
 (defun counsel-ctest (arg)
   "Browse and execute ctest tests.
 
-If the value of `counsel-ctest-dir' is not set (e.g. nil) prompt user for the
+If the value of `counsel-test-dir' is not set (e.g. nil) prompt user for the
 ctest directory.
 
 With a prefix argument ARG also force prompt user for this directory."

@@ -29,17 +29,17 @@
 (ert-deftest counsel-ctest:check-build-dir ()
   (with-mock
     (stub read-directory-name => "/test/path")
-    (should (string-equal (counsel-ctest--get-build-dir t) "/test/path/"))
+    (should (string-equal (counsel-test--get-dir t) "/test/path/"))
 
     (let* ((default-dir "/default/test/path/")
-           (counsel-ctest-dir default-dir))
-      (should (equal (counsel-ctest--get-build-dir) default-dir)))
+           (counsel-test-dir default-dir))
+      (should (equal (counsel-test--get-dir) default-dir)))
 
-    (should (equal (counsel-ctest--get-build-dir) "/test/path/"))))
+    (should (equal (counsel-test--get-dir) "/test/path/"))))
 
 (ert-deftest counsel-ctest:check-get-candidates ()
   (with-mock
-    (let ((counsel-ctest-dir "/test/path")
+    (let ((counsel-test-dir "/test/path")
           (expected-result '("Test  #1: test-one"
                              "Test  #2: test-two"
                              "Test  #3: test-three")))
