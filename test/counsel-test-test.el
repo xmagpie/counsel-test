@@ -58,18 +58,20 @@ Total Tests: 3")
   (should (equal (counsel-test-ctest--num-from-str "Test  #302: test") 302)))
 
 (ert-deftest counsel-test-ctest:create-cmd ()
-  (let ((counsel-test-ctest-env "ENV_VAR=value")
-        (counsel-test-ctest-cmd "ctest"))
-    (should (equal (counsel-test-ctest--create-cmd '(1))
-                   "env ENV_VAR=value ctest -I 1,1"))
-    (should (equal (counsel-test-ctest--create-cmd
-                    '(1 23 145))
-                   "env ENV_VAR=value ctest -I 1,1,23,23,145,145")))
+  (let ((single-selection '("Test  #1: test-one"))
+        (multiple-selections '("Test  #1: test-one" "Test  #23: extra"
+                               "Test  #145: description")))
+    (let ((counsel-test-ctest-env "ENV_VAR=value")
+          (counsel-test-ctest-cmd "ctest"))
+      (should (equal (counsel-test-ctest--create-cmd single-selection)
+                     "env ENV_VAR=value ctest -I 1,1"))
+      (should (equal (counsel-test-ctest--create-cmd multiple-selections)
+                     "env ENV_VAR=value ctest -I 1,1,23,23,145,145")))
 
-  (let ((counsel-test-ctest-env "")
-        (counsel-test-ctest-cmd "ctest -v"))
-    (should (equal (counsel-test-ctest--create-cmd '(1)) "ctest -v -I 1,1"))
-    (should (equal (counsel-test-ctest--create-cmd
-                    '(1 23 145))
-                   "ctest -v -I 1,1,23,23,145,145"))))
+    (let ((counsel-test-ctest-env "")
+          (counsel-test-ctest-cmd "ctest -v"))
+      (should (equal (counsel-test-ctest--create-cmd single-selection)
+                     "ctest -v -I 1,1"))
+      (should (equal (counsel-test-ctest--create-cmd multiple-selections)
+                     "ctest -v -I 1,1,23,23,145,145")))))
 ;;; counsel-test-test.el ends here

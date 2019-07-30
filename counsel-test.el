@@ -47,10 +47,7 @@ Return a list of strings representing the trimmed command output."
   (seq-map 's-trim (s-lines (shell-command-to-string candidates-cmd))))
 
 (defun counsel-test--get-dir (&optional force-read-dir)
-  "Determine the directory to run the tests in.
-
-When FORCE-READ-DIR is not nil prompt for ctest directory even if it was
-already set."
+  "Determine the directory to run the tests in."
   (let ((test-dir (if (or force-read-dir (not counsel-test-dir))
                       (read-directory-name "Select test dir: ")
                     counsel-test-dir)))
@@ -61,18 +58,14 @@ already set."
   "Command used to invoke ctest.")
 
 (defvar counsel-test-ctest-env "CLICOLOR_FORCE=1 CTEST_OUTPUT_ON_FAILURE=1"
-  "Envirionment variables for tests.
+  "Environment variables for tests.
 
 It is recommended to set this variable via dir-locals.el.")
 
-(defun counsel-test-ctest--discover (&optional force-read-dir)
-  "Run ctest to get the available test candidates.
-
-When FORCE-READ-DIR is not nil prompt for ctest directory even if it was
-already set."
+(defun counsel-test-ctest--discover ()
+  "Run ctest to get the available test candidates."
   (let* ((candidates-cmd (concat counsel-test-ctest-cmd " -N"))
-         (test-re "^Test[[:space:]]*#")
-         (default-directory (counsel-test--get-dir force-read-dir)))
+         (test-re "^Test[[:space:]]*#"))
     (seq-filter (lambda(s)
                   (s-match test-re s))
                 (counsel-test--candidates-cmd-result candidates-cmd))))
@@ -90,28 +83,45 @@ S is a single string representing test from the output of ctest
 STRS is a list of test strings from the output of ctest -N"
   (seq-map 'counsel-test-ctest--num-from-str strs))
 
-(defun counsel-test-ctest--create-cmd (test-nums)
+(defun counsel-test-ctest--create-cmd (selections)
   "Create ctest command to run selected candidates.
 
-TEST-NUMS is a list of numbers representing the tests to run"
-  (format "%s%s -I %s"
-	  (if (string-empty-p counsel-test-ctest-env)
-              ""
-            (format "env %s " counsel-test-ctest-env))
-          counsel-test-ctest-cmd
-	  (s-join "," (seq-map (lambda(n)
-                                 (format "%d,%d" n n))
-                               test-nums))))
+SELECTIONS is a list of selected strings from `counsel-test-ctest--discover'"
+  (let* ((environment (if (string-empty-p counsel-test-ctest-env)
+                          ""
+                        (format "env %s " counsel-test-ctest-env)))
+         (test-nums (counsel-test-ctest--nums-from-strs selections))
+         (test-selection-str (s-join ","
+                                     (seq-map (lambda(n)
+                                                (format "%d,%d" n n))
+                                              test-nums))))
+    (format "%s%s -I %s" environment counsel-test-ctest-cmd test-selection-str)))
 
+(defun counsel-test (discover-f create-cmd-f caller &optional prefix-arg)
+  "This function is a generic entry-point for external testing frameworks.
 
-(defun counsel-test-ctest--action (selections)
-  "The action to run on the selected candidates.
+One should specify two functions:
 
-SELECTIONS is a list of candidate tests to execute."
-  (let* ((test-nums (counsel-test-ctest--nums-from-strs selections))
-         (default-directory (counsel-test--get-dir))
-         (compile-command (counsel-test-ctest--create-cmd test-nums)))
-    (compile compile-command)))
+DISCOVER-F is a function that extracts a list of tests (possibly by running
+external executable) and gives them as a list of candidates for `ivy-read'.
+
+CREATE-CMD-F is a function that accepts the list of strings (selections from
+`ivy-read' based on DISCOVER-F) and creates an external command to run tests in
+compile.
+
+CALLER is caller argument for `ivy-read'.
+
+OPTIONAL PREFIX-ARG is forwarded to `counsel-test--get-dir' to force directory
+read."
+  (let* ((default-directory (counsel-test--get-dir prefix-arg))
+         (multi-action (lambda (x) (compile (funcall create-cmd-f x))))
+         (single-action (lambda (x) (funcall multi-action (list x)))))
+    (ivy-read "Select tests: " (funcall discover-f)
+              :require-match t
+              :sort t
+              :action single-action
+              :multi-action multi-action
+              :caller caller)))
 
 ;;;###autoload
 (defun counsel-test-ctest (arg)
@@ -126,12 +136,10 @@ With a prefix argument ARG also force prompt user for this directory."
   (unless (executable-find counsel-test-ctest-cmd)
     (error "Command '%s' not found in path" counsel-test-ctest-cmd))
 
-  (ivy-read "Select tests: " (counsel-test-ctest--discover arg)
-	    :require-match t
-	    :sort t
-	    :action (lambda (x) (counsel-test-ctest--action (list x)))
-            :multi-action 'counsel-test-ctest--action
-	    :caller 'counsel-test-ctest))
+  (counsel-test 'counsel-test-ctest--discover
+                'counsel-test-ctest--create-cmd
+                'counsel-test-ctest
+                arg))
 
 (provide 'counsel-test)
 ;;; counsel-test.el ends here
