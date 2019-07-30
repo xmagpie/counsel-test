@@ -57,6 +57,12 @@ already set."
                     counsel-test-dir)))
     (s-append "/" (s-chop-suffix "/" test-dir))))
 
+(defun counsel-test--candidates-cmd-result (candidates-cmd)
+  "Execute the given CANDIDATES-CMD command and handle the output.
+
+Return a list of strings representing the trimmed command output."
+  (seq-map 's-trim (s-lines (shell-command-to-string candidates-cmd))))
+
 (defun counsel-ctest--get-candidates (&optional force-read-dir)
   "Run ctest to get the available test candidates.
 
@@ -67,17 +73,14 @@ already set."
          (default-directory (counsel-test--get-dir force-read-dir)))
     (seq-filter (lambda(s)
                   (s-match test-re s))
-                (seq-map 's-trim
-                         (s-lines (shell-command-to-string
-                                   candidates-cmd))))))
+                (counsel-test--candidates-cmd-result candidates-cmd))))
 
 (defun counsel-ctest--num-from-str (s)
   "Extract number from the string representing test.
 
 S is a single string representing test from the output of ctest
 -N, e.g Test #2: MyTest"
-  (string-to-number
-	   (cadr (s-match "#\\([[:digit:]]+\\)" s))))
+  (string-to-number (cadr (s-match "#\\([[:digit:]]+\\)" s))))
 
 (defun counsel-ctest--nums-from-strs (strs)
   "Extract numbers from strings representing tests.
