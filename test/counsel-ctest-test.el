@@ -24,6 +24,8 @@
 (require 'ert)
 (require 'el-mock)
 
+(require 'counsel-ctest)
+
 (ert-deftest counsel-ctest:check-build-dir ()
   (with-mock
     (stub read-directory-name => "/test/path")
