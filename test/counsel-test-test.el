@@ -1,4 +1,4 @@
-;;; counsel-ctest-test.el --- counsel-ctest: tests  -*- lexical-binding: t; -*-
+;;; counsel-test-test.el --- counsel-test: tests  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Konstantin Sorokin
 
@@ -24,9 +24,9 @@
 (require 'ert)
 (require 'el-mock)
 
-(require 'counsel-ctest)
+(require 'counsel-test)
 
-(ert-deftest counsel-ctest:check-build-dir ()
+(ert-deftest counsel-test-:check-build-dir ()
   (with-mock
     (stub read-directory-name => "/test/path")
     (should (string-equal (counsel-test--get-dir t) "/test/path/"))
@@ -37,7 +37,7 @@
 
     (should (equal (counsel-test--get-dir) "/test/path/"))))
 
-(ert-deftest counsel-ctest:check-get-candidates ()
+(ert-deftest counsel-test-ctest:check-discover ()
   (with-mock
     (let ((counsel-test-dir "/test/path")
           (expected-result '("Test  #1: test-one"
@@ -51,24 +51,25 @@
 
 Total Tests: 3")
 
-      (should (equal (counsel-ctest--get-candidates) expected-result)))))
+      (should (equal (counsel-test-ctest--discover) expected-result)))))
 
-(ert-deftest counsel-ctest:check-num-from-str ()
-  (should (equal (counsel-ctest--num-from-str "Test  #1: test-one") 1))
-  (should (equal (counsel-ctest--num-from-str "Test  #302: test") 302)))
+(ert-deftest counsel-test-ctest:check-num-from-str ()
+  (should (equal (counsel-test-ctest--num-from-str "Test  #1: test-one") 1))
+  (should (equal (counsel-test-ctest--num-from-str "Test  #302: test") 302)))
 
-(ert-deftest counsel-ctest:create-cmd ()
-  (let ((counsel-ctest-env "ENV_VAR=value")
-        (counsel-ctest-cmd "ctest"))
-    (should (equal (counsel-ctest--create-cmd '(1)) "env ENV_VAR=value ctest -I 1,1"))
-    (should (equal (counsel-ctest--create-cmd
+(ert-deftest counsel-test-ctest:create-cmd ()
+  (let ((counsel-test-ctest-env "ENV_VAR=value")
+        (counsel-test-ctest-cmd "ctest"))
+    (should (equal (counsel-test-ctest--create-cmd '(1))
+                   "env ENV_VAR=value ctest -I 1,1"))
+    (should (equal (counsel-test-ctest--create-cmd
                     '(1 23 145))
                    "env ENV_VAR=value ctest -I 1,1,23,23,145,145")))
 
-  (let ((counsel-ctest-env "")
-        (counsel-ctest-cmd "ctest -v"))
-    (should (equal (counsel-ctest--create-cmd '(1)) "ctest -v -I 1,1"))
-    (should (equal (counsel-ctest--create-cmd
+  (let ((counsel-test-ctest-env "")
+        (counsel-test-ctest-cmd "ctest -v"))
+    (should (equal (counsel-test-ctest--create-cmd '(1)) "ctest -v -I 1,1"))
+    (should (equal (counsel-test-ctest--create-cmd
                     '(1 23 145))
                    "ctest -v -I 1,1,23,23,145,145"))))
-;;; counsel-ctest-test.el ends here
+;;; counsel-test-test.el ends here
