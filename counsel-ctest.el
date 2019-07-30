@@ -87,8 +87,10 @@ STRS is a list of test strings from the output of ctest -N"
   "Create ctest command to run selected candidates.
 
 TEST-NUMS is a list of numbers representing the tests to run"
-  (format "env %s %s -I %s"
-	  counsel-ctest-env
+  (format "%s%s -I %s"
+	  (if (string-empty-p counsel-ctest-env)
+              ""
+            (format "env %s " counsel-ctest-env))
           counsel-ctest-cmd
 	  (s-join "," (seq-map (lambda(n)
                                  (format "%d,%d" n n))
