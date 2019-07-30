@@ -5,7 +5,7 @@
 ;; Authors: Konstantin Sorokin <sorokin.kc@gmail.com>
 ;; URL: http://github.com/xmagpie/counsel-ctest
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "24") (ivy "0.11.0") (s "1.12.0"))
+;; Package-Requires: ((emacs "25.1") (ivy "0.11.0") (s "1.12.0"))
 ;; Keywords: tools, ivy, counsel, ctest
 
 ;; This file is NOT part of GNU Emacs.
@@ -30,6 +30,8 @@
 
 ;;; Code:
 (require 's)
+(require 'seq)
+(require 'subr-x)
 (require 'ivy)
 
 (defvar counsel-ctest-cmd "ctest"
