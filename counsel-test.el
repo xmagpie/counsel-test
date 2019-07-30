@@ -84,7 +84,7 @@ STRS is a list of test strings from the output of ctest -N"
   (seq-map 'counsel-test-ctest--num-from-str strs))
 
 (defun counsel-test-ctest--create-cmd (selections)
-  "Create ctest command to run selected candidates.
+  "Create ctest command to run the selected candidates.
 
 SELECTIONS is a list of selected strings from `counsel-test-ctest--discover'"
   (let* ((environment (if (string-empty-p counsel-test-ctest-env)
@@ -139,6 +139,57 @@ With a prefix argument ARG also force prompt user for this directory."
   (counsel-test 'counsel-test-ctest--discover
                 'counsel-test-ctest--create-cmd
                 'counsel-test-ctest
+                arg))
+
+(defvar counsel-test-pytest-cmd "python -m pytest"
+  "Command used to invoke pytest.")
+
+(defun counsel-test-pytest--cut-params (test-str)
+  "Remove parameter part(if any) from the pytest test string TEST-STR.
+
+TEST-STR is a string from pytest.  Generally it looks like this:
+    path/to/testing_module.py::TestClass::test_name
+However, pytest tests can be parameterized, in which case their name is
+enhanced with the parameter value, e.g.:
+    path/to/testing_module.py::TestClass::test_name[param_value].
+
+Pytest does not support executing tests with concrete parameters, that is why it
+is necessary to cut them."
+  (substring test-str 0 (s-index-of "[" test-str)))
+
+(defun counsel-test-pytest--discover ()
+  "Run pytest to get the available test candidates.
+
+NOTE: currently, pytest does not support executing tests with concrete
+parameter values, that is why result contains these test name without the
+parameter part.
+
+FIXME: there are several artifact strings in the output for now. Need to get
+rid of them."
+  (let ((candidates-cmd (concat counsel-test-pytest-cmd
+                                " --disable-pytest-warnings --collect-only -q")))
+    (seq-uniq (seq-map 'counsel-test-pytest--cut-params
+                       (counsel-test--candidates-cmd-result candidates-cmd)))))
+
+(defun counsel-test-pytest--create-cmd (selections)
+  "Create pytest command to run the selected candidates.
+
+SELECTIONS is a list of selected strings from `counsel-test-pytest--discover'"
+  (format "%s %s" counsel-test-pytest-cmd (s-join " " selections)))
+
+;;;###autoload
+(defun counsel-test-pytest (arg)
+  "Browse and execute pytest tests.
+
+If the value of `counsel-test-dir' is not set (e.g. nil) prompt user for the
+ctest directory.
+
+With a prefix argument ARG also force prompt user for this directory."
+  (interactive "P")
+
+  (counsel-test 'counsel-test-pytest--discover
+                'counsel-test-pytest--create-cmd
+                'counsel-test-pytest
                 arg))
 
 (provide 'counsel-test)
