@@ -43,10 +43,10 @@
                  "path/test.py::fun")))
 
 (ert-deftest counsel-test-pytest:check-discover ()
-  :expected-result :failed
   (with-mock
     (let ((counsel-test-dir "/test/path")
           (expected-result '("tests/unit/test_module1.py::test_one"
+                             "tests/unit/test_module2.py::test_one"
                              "tests/unit/test_module2.py::Class::test"
                              "tests/integration/test_module3.py::test")))
       (stub shell-command-to-string =>
@@ -56,7 +56,6 @@ tests/unit/test_module2.py::Class::test
 tests/integration/test_module3.py::test[param1]
 tests/integration/test_module3.py::test[param2]
 
--- Docs: https://docs.pytest.org/en/latest/warnings.html
 5 warnings in 0.50 seconds")
 
       (should (equal (counsel-test-pytest--discover) expected-result)))))

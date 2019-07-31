@@ -46,14 +46,15 @@ is necessary to cut them."
 
 NOTE: currently, pytest does not support executing tests with concrete
 parameter values, that is why result contains these test name without the
-parameter part.
-
-FIXME: there are several artifact strings in the output for now.  Need to get
-rid of them."
-  (let ((candidates-cmd (concat counsel-test-pytest-cmd
-                                " --disable-pytest-warnings --collect-only -q")))
+parameter part."
+  (let* ((candidates-cmd (concat counsel-test-pytest-cmd
+                                 " --disable-pytest-warnings --collect-only -q"))
+         (candidates (counsel-test--candidates-cmd-result candidates-cmd)))
     (seq-uniq (seq-map 'counsel-test-pytest--cut-params
-                       (counsel-test--candidates-cmd-result candidates-cmd)))))
+                       ;; FIXME: this is actually a hack, even with quiet option
+                       ;; set, pytest still prints status line separated with
+                       ;; an empty one. Drop both.
+                       (butlast candidates 2)))))
 
 (defun counsel-test-pytest--create-cmd (selections)
   "Create pytest command to run the selected candidates.
@@ -66,7 +67,7 @@ SELECTIONS is a list of selected strings from `counsel-test-pytest--discover'"
   "Browse and execute pytest tests.
 
 If the value of `counsel-test-dir' is not set (e.g. nil) prompt user for the
-ctest directory.
+pytest directory.
 
 With a prefix argument ARG also force prompt user for this directory."
   (interactive "P")
