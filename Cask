@@ -1,7 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package-file "counsel-ctest.el")
+(package-file "counsel-test.el")
 
 (development
  (depends-on "ert-runner")
