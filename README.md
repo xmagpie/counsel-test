@@ -31,7 +31,7 @@ choice (e.g. `load-path`/`require`, `use-package` etc). An example with
   :load-path "~/.emacs.local/counsel-test")
 ```
 
-## Usage
+# Usage
 Currently, there is a basic support only for two testing framework: **ctest**
 and **pytest**. There are two separate commands for them: `counsel-test-ctest`
 and `counsel-test-pytest` respectively.
@@ -51,7 +51,7 @@ projects.
 Manual test directory selection will still be available with the help of prefix
 argument: `C-u M-x counsel-test-ctest`.
 
-### Customization
+## Customization
 This package contains several variables that allow certain customization on the
 per-project basis. They have sensible defaults but it is strongly recommended to
 set some of them in `dir-locals.el` for each project separately.
@@ -78,7 +78,7 @@ set some of them in `dir-locals.el` for each project separately.
 * `counsel-test-pytest-cmd` - command that is used to run pytest, defaults to
   "python -m pytest". Can be altered similar to `counsel-test-ctest-cmd`.
 
-### Integration with other frameworks
+## Integration with other frameworks
 I plan to add support for other frameworks, but if you can't find what you need,
 it is easy to implement the integration yourself. Don't forget to submit
 pull-request with your implementation!
