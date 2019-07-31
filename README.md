@@ -1,4 +1,4 @@
-# counsel-test [![Build Status](https://travis-ci.com/xmagpie/counsel-ctest.svg?branch=master)](https://travis-ci.com/xmagpie/counsel-test)
+# counsel-test [![Build Status](https://travis-ci.com/xmagpie/counsel-test.svg?branch=master)](https://travis-ci.com/xmagpie/counsel-test)
 An emacs package that integrates ivy/counsel with different testing frameworks.
 
 This package is inspired by
