@@ -29,7 +29,7 @@
 (defvar counsel-test-ctest-cmd "ctest"
   "Command used to invoke ctest.")
 
-(defvar counsel-test-ctest-env "CLICOLOR_FORCE=1 CTEST_OUTPUT_ON_FAILURE=1"
+(defvar counsel-test-ctest-env '("CLICOLOR_FORCE=1" "CTEST_OUTPUT_ON_FAILURE=1")
   "Environment variables for tests.
 
 It is recommended to set this variable via dir-locals.el.")
@@ -40,7 +40,8 @@ It is recommended to set this variable via dir-locals.el.")
          (test-re "^Test[[:space:]]*#"))
     (seq-filter (lambda(s)
                   (s-match test-re s))
-                (counsel-test--candidates-cmd-result candidates-cmd))))
+                (counsel-test--call-cmd counsel-test-ctest-cmd
+                                        nil "-N"))))
 
 (defun counsel-test-ctest--num-from-str (s)
   "Extract number from the string representing test.
@@ -59,9 +60,9 @@ STRS is a list of test strings from the output of ctest -N"
   "Create ctest command to run the selected candidates.
 
 SELECTIONS is a list of selected strings from `counsel-test-ctest--discover'"
-  (let* ((environment (if (string-empty-p counsel-test-ctest-env)
-                          ""
-                        (format "env %s " counsel-test-ctest-env)))
+  (let* ((environment-vars (s-join " " counsel-test-ctest-env))
+         (environment (if (string-empty-p environment-vars)
+                          "" (format "env %s " environment-vars)))
          (test-nums (counsel-test-ctest--nums-from-strs selections))
          (test-selection-str (s-join ","
                                      (seq-map (lambda(n)

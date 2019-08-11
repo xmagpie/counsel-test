@@ -25,8 +25,11 @@
 ;;; Code:
 (require 'counsel-test-core)
 
-(defvar counsel-test-pytest-cmd "python -m pytest"
+(defvar counsel-test-pytest-cmd "pytest"
   "Command used to invoke pytest.")
+
+(defvar counsel-test-pytest-env nil
+  "Environment to use with invocation of `counsel-test-pytest-cmd'.")
 
 (defun counsel-test-pytest--cut-params (test-str)
   "Remove parameter part(if any) from the pytest test string TEST-STR.
@@ -47,9 +50,10 @@ is necessary to cut them."
 NOTE: currently, pytest does not support executing tests with concrete
 parameter values, that is why result contains these test name without the
 parameter part."
-  (let* ((candidates-cmd (concat counsel-test-pytest-cmd
-                                 " --disable-pytest-warnings --collect-only -q"))
-         (candidates (counsel-test--candidates-cmd-result candidates-cmd)))
+  (let* ((candidates (counsel-test--call-cmd counsel-test-pytest-cmd
+                                             counsel-test-pytest-env
+                                             "--disable-pytest-warnings"
+                                             "--collect-only" "-q")))
     (seq-uniq (seq-map 'counsel-test-pytest--cut-params
                        ;; FIXME: this is actually a hack, even with quiet option
                        ;; set, pytest still prints status line separated with

@@ -44,13 +44,14 @@
 
 (ert-deftest counsel-test-pytest:check-discover ()
   (with-mock
-    (let ((counsel-test-dir "/test/path")
-          (expected-result '("tests/unit/test_module1.py::test_one"
-                             "tests/unit/test_module2.py::test_one"
-                             "tests/unit/test_module2.py::Class::test"
-                             "tests/integration/test_module3.py::test")))
-      (stub shell-command-to-string =>
-            "tests/unit/test_module1.py::test_one
+   (let ((counsel-test-dir "/test/path")
+         (expected-result '("tests/unit/test_module1.py::test_one"
+                            "tests/unit/test_module2.py::test_one"
+                            "tests/unit/test_module2.py::Class::test"
+                            "tests/integration/test_module3.py::test")))
+     (stub call-process => 0)
+     (stub buffer-string =>
+           "tests/unit/test_module1.py::test_one
 tests/unit/test_module2.py::test_one
 tests/unit/test_module2.py::Class::test
 tests/integration/test_module3.py::test[param1]
@@ -58,7 +59,8 @@ tests/integration/test_module3.py::test[param2]
 
 5 warnings in 0.50 seconds")
 
-      (should (equal (counsel-test-pytest--discover) expected-result)))))
+     (should (equal (get-buffer "*counsel-test-pytest-log*") nil))
+     (should (equal (counsel-test-pytest--discover) expected-result)))))
 
 (ert-deftest counsel-test-pytest:create-cmd ()
   (let ((single-selection '("tests/unit/test_module1.py::test_one"))

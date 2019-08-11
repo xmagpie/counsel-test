@@ -32,11 +32,42 @@
 
 It is recommended to set this variable via dir-locals.el.")
 
-(defun counsel-test--candidates-cmd-result (candidates-cmd)
-  "Execute the given CANDIDATES-CMD command and handle the output.
+(defun counsel-test--process-lines (program &rest args)
+  "Modified version of  `process-lines'.
 
-Return a list of strings representing the trimmed command output."
-  (seq-map 's-trim (s-lines (shell-command-to-string candidates-cmd))))
+This function is similar to `process-lines' except that it stores
+its output in a dedicated buffer based on the program name
+*counsel-test-<program-name>-log*.  If the program execution
+fails, the command output is saved for inspection.  Otherwise, the
+buffer is killed.
+
+PROGRAM is a the name of program to run (passed to `call-process').
+ARGS are the arguments for the given program."
+  (let ((log-buffer (get-buffer-create
+                     (format "*counsel-test-%s-log*" program))))
+    (with-current-buffer log-buffer
+      (erase-buffer) ;; clear the contents in case it already exists
+      (let ((status (apply 'call-process program nil (current-buffer)
+                           nil args)))
+
+        (unless (eq status 0)
+          (error "%s exited with status %s.  View log in '%s'"
+                 program status (buffer-name)))
+
+        (let ((lines (seq-map 's-trim (s-lines (buffer-string)))))
+          ;; Remove the discovery log buffer on success
+          (kill-buffer)
+          lines)))))
+
+(defun counsel-test--call-cmd (program &optional env &rest args)
+  "Execute the given PROGRAM in modifed environment.
+
+ENV is a list of extra envirnment variables to include for PROGRAM execution.
+ARGS are the arguments for the given program.
+
+Returns a list of strings representing the trimmed command output."
+  (let ((process-environment (append env process-environment)))
+    (apply 'counsel-test--process-lines program args)))
 
 (defun counsel-test--get-dir (&optional force-read-dir)
   "Determine the directory to run the tests in.

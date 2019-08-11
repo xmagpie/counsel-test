@@ -38,19 +38,22 @@
 
 (ert-deftest counsel-test-ctest:check-discover ()
   (with-mock
-    (let ((counsel-test-dir "/test/path")
-          (expected-result '("Test  #1: test-one"
-                             "Test  #2: test-two"
-                             "Test  #3: test-three")))
-      (stub shell-command-to-string =>
-            "Test project /path/to/projects
+   (let ((counsel-test-dir "/test/path")
+         (expected-result '("Test  #1: test-one"
+                            "Test  #2: test-two"
+                            "Test  #3: test-three")))
+     (stub call-process => 0)
+     (stub buffer-string =>
+           "Test project /path/to/projects
   Test  #1: test-one
   Test  #2: test-two
   Test  #3: test-three
 
 Total Tests: 3")
 
-      (should (equal (counsel-test-ctest--discover) expected-result)))))
+     ;; TODO: remove code duplication from tests
+     (should (equal (get-buffer "*counsel-test-ctest-log*") nil))
+     (should (equal (counsel-test-ctest--discover) expected-result)))))
 
 (ert-deftest counsel-test-ctest:check-num-from-str ()
   (should (equal (counsel-test-ctest--num-from-str "Test  #1: test-one") 1))
@@ -60,14 +63,14 @@ Total Tests: 3")
   (let ((single-selection '("Test  #1: test-one"))
         (multiple-selections '("Test  #1: test-one" "Test  #23: extra"
                                "Test  #145: description")))
-    (let ((counsel-test-ctest-env "ENV_VAR=value")
+    (let ((counsel-test-ctest-env '("ENV_VAR=value"))
           (counsel-test-ctest-cmd "ctest"))
       (should (equal (counsel-test-ctest--create-cmd single-selection)
                      "env ENV_VAR=value ctest -I 1,1"))
       (should (equal (counsel-test-ctest--create-cmd multiple-selections)
                      "env ENV_VAR=value ctest -I 1,1,23,23,145,145")))
 
-    (let ((counsel-test-ctest-env "")
+    (let ((counsel-test-ctest-env nil)
           (counsel-test-ctest-cmd "ctest -v"))
       (should (equal (counsel-test-ctest--create-cmd single-selection)
                      "ctest -v -I 1,1"))
