@@ -69,6 +69,19 @@ Returns a list of strings representing the trimmed command output."
   (let ((process-environment (append env process-environment)))
     (apply 'counsel-test--process-lines program args)))
 
+(defun counsel-test--env-to-str (env)
+  "Transform the given list of environment variables ENV to string.
+
+ENV is a list of strings representing environment variables and their values
+similar to the `process-environment' variable format.
+
+The return value is a string 'env ENV1=VALUE1 ENV2=VALUE2 ' (note
+the extra space at the end).  If the given list ENV is nil, return
+an empty string."
+  (let ((joined-vars (s-join " " env)))
+    (if (string-empty-p joined-vars)
+        "" (format "env %s " joined-vars))))
+
 (defun counsel-test--get-dir (&optional force-read-dir)
   "Determine the directory to run the tests in.
 

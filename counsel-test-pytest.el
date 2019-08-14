@@ -29,7 +29,9 @@
   "Command used to invoke pytest.")
 
 (defvar counsel-test-pytest-env nil
-  "Environment to use with invocation of `counsel-test-pytest-cmd'.")
+  "Environment to use with invocation of `counsel-test-pytest-cmd'.
+
+This may be handy if you need to modify PYTHONPATH before starting pytest.")
 
 (defun counsel-test-pytest--cut-params (test-str)
   "Remove parameter part(if any) from the pytest test string TEST-STR.
@@ -64,7 +66,8 @@ parameter part."
   "Create pytest command to run the selected candidates.
 
 SELECTIONS is a list of selected strings from `counsel-test-pytest--discover'"
-  (format "%s %s" counsel-test-pytest-cmd (s-join " " selections)))
+  (format "%s%s %s" (counsel-test--env-to-str counsel-test-pytest-env)
+          counsel-test-pytest-cmd (s-join " " selections)))
 
 ;;;###autoload
 (defun counsel-test-pytest (arg)

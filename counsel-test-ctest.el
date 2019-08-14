@@ -60,9 +60,7 @@ STRS is a list of test strings from the output of ctest -N"
   "Create ctest command to run the selected candidates.
 
 SELECTIONS is a list of selected strings from `counsel-test-ctest--discover'"
-  (let* ((environment-vars (s-join " " counsel-test-ctest-env))
-         (environment (if (string-empty-p environment-vars)
-                          "" (format "env %s " environment-vars)))
+  (let* ((environment (counsel-test--env-to-str counsel-test-ctest-env))
          (test-nums (counsel-test-ctest--nums-from-strs selections))
          (test-selection-str (s-join ","
                                      (seq-map (lambda(n)
