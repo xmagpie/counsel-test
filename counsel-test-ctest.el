@@ -36,8 +36,7 @@ It is recommended to set this variable via dir-locals.el.")
 
 (defun counsel-test-ctest--discover ()
   "Run ctest to get the available test candidates."
-  (let* ((candidates-cmd (concat counsel-test-ctest-cmd " -N"))
-         (test-re "^Test[[:space:]]*#"))
+  (let* ((test-re "^Test[[:space:]]*#"))
     (seq-filter (lambda(s)
                   (s-match test-re s))
                 (counsel-test--call-cmd counsel-test-ctest-cmd
