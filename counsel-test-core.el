@@ -92,7 +92,7 @@ OPTIONAL FORCE-READ-DIR whether to force prompt user for the test directory"
                     counsel-test-dir)))
     (s-append "/" (s-chop-suffix "/" test-dir))))
 
-(defun counsel-test (discover-f create-cmd-f caller &optional prefix-arg)
+(defun counsel-test (discover-f create-cmd-f caller &optional arg)
   "This function is a generic entry-point for external testing frameworks.
 
 One should specify two functions:
@@ -106,9 +106,9 @@ compile.
 
 CALLER is caller argument for `ivy-read'.
 
-OPTIONAL PREFIX-ARG is forwarded to `counsel-test--get-dir' to force directory
+OPTIONAL ARG is forwarded to `counsel-test--get-dir' to force directory
 read."
-  (let* ((default-directory (counsel-test--get-dir prefix-arg))
+  (let* ((default-directory (counsel-test--get-dir arg))
          (multi-action (lambda (x) (compile (funcall create-cmd-f x))))
          (single-action (lambda (x) (funcall multi-action (list x)))))
     (ivy-read "Select tests: " (funcall discover-f)
