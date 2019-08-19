@@ -24,7 +24,6 @@
 
 ;;; Code:
 (require 'counsel-test-core)
-(require 'subr-x)
 
 (defvar counsel-test-ctest-cmd "ctest"
   "Command used to invoke ctest.")

@@ -25,6 +25,7 @@
 ;;; Code:
 (require 's)
 (require 'seq)
+(require 'subr-x)
 (require 'ivy)
 
 (defvar counsel-test-dir nil
