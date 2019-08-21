@@ -32,7 +32,7 @@ choice (e.g. `load-path`/`require`, `use-package` etc). An example with
 ```
 
 # Usage
-Currently, there is a basic support only for two testing framework: **ctest**
+Currently, there is a basic support only for two testing frameworks: **ctest**
 and **pytest**. There are two separate commands for them: `counsel-test-ctest`
 and `counsel-test-pytest` respectively.
 
@@ -51,6 +51,10 @@ projects.
 Manual test directory selection will still be available with the help of prefix
 argument: `C-u M-x counsel-test-ctest`.
 
+If something goes wrong during test discovery, an error message will be shown in
+the echo area and you may view the discover function output in a dedicated
+buffer: `*counsel-test-<program>-log*`.
+
 ## Customization
 This package contains several variables that allow certain customization on the
 per-project basis. They have sensible defaults but it is strongly recommended to
@@ -66,17 +70,24 @@ set some of them in `dir-locals.el` for each project separately.
 
 #### Ctest specific variables
 * `counsel-test-ctest-env` - environment variable settings for the ctest tests
-  execution. The default value is `"CLICOLOR_FORCE=1 CTEST_OUTPUT_ON_FAILURE=1"`
-  to enable colors and test output only in case of failures. More variables can
-  be found in [ctest docs](https://cmake.org/cmake/help/latest/manual/ctest.1.html).
+  **execution**. The default value is
+  `'("CLICOLOR_FORCE=1" "CTEST_OUTPUT_ON_FAILURE=1")` to enable colors and
+  test output only in case of failures. More variables can be found in
+  [ctest docs](https://cmake.org/cmake/help/latest/manual/ctest.1.html).
 
 * `counsel-test-ctest-cmd` - command that is used to run ctest, defaults to
   "ctest". If you wish to use the custom ctest binary, point this variable to
-  it, e.g.  `(setq counsel-ctest-cmd "path/to/custom/ctest-bin)`.
+  it, e.g.  `(setq counsel-ctest-cmd "path/to/custom/ctest-bin)`.  Keep in mind
+  that this variable value is forwarded to `call-process` as `program` argument,
+  so it should be available on your system.
 
 #### Pytest specific variables
+* `counsel-test-pytest-env` - environment variable settings for pytest tests
+  **discovery**. The default value is `nil`. This should be a list of
+  `"ENV=value"` strings (see `process-environment`). This may be particularly
+  handy if you need to update your `PYTHONPATH` before running `pytest`.
 * `counsel-test-pytest-cmd` - command that is used to run pytest, defaults to
-  "python -m pytest". Can be altered similar to `counsel-test-ctest-cmd`.
+  "pytest". Can be altered similar to `counsel-test-ctest-cmd`.
 
 ## Integration with other frameworks
 I plan to add support for other frameworks, but if you can't find what you need,
