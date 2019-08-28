@@ -1,4 +1,4 @@
-# counsel-test [![Build Status](https://travis-ci.com/xmagpie/counsel-test.svg?branch=master)](https://travis-ci.com/xmagpie/counsel-test)
+# counsel-test [![Build Status](https://travis-ci.com/xmagpie/counsel-test.svg?branch=master)](https://travis-ci.com/xmagpie/counsel-test) [![MELPA](https://melpa.org/packages/counsel-test-badge.svg)](https://melpa.org/#/counsel-test)
 An emacs package that integrates ivy/counsel with different testing frameworks.
 
 This package is inspired by
@@ -18,8 +18,15 @@ support for other frameworks and add some helpful features in the
 future. Feedback is highly appreciated!
 
 # Installation
-This package is not yet in MELPA, so currently the only possible way is to
-install it manually.
+
+## [MELPA](https://melpa.org/)
+
+<kbd>M-x package-install [RET] counsel-test [RET]</kbd> or
+
+``` emacs-lisp
+(use-package counsel-test
+  :ensure t)
+```
 
 ## Manual installation
 First, clone this repo. Then, load the package with the method of your
